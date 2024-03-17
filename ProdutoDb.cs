@@ -1,14 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using apiMinima;
+using Microsoft.EntityFrameworkCore;
 
-namespace apiMinima
+public class ApplicationContext : DbContext
 {
-    public class ApplicationContext : DbContext
+    public DbSet<Produtos> Produtos { get; set; }
+    public DbSet<Categoria> Categoria { get; set; }
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
-        {
-        }
-
-        public DbSet<DadosProduto> Produtos { get; set; }
-        public DbSet<Categoria> Categoria { get; set; }
+        _ = optionsBuilder.UseSqlServer(@"Server=.\SQLEXPRESS;Database=ProdutosDb;Trusted_Connection=True;TrustServerCertificate=true;");
     }
+
 }

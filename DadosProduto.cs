@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace apiMinima
 {
-    public class DadosProduto
+    public class Produtos
     {
         //Nome do produto;
         //Código do produto;
@@ -34,17 +34,7 @@ namespace apiMinima
         [Key]
         public int Id { get; set; }
         public string? Nome { get; set; }
-        public ICollection<DadosProduto>? Produtos { get; set; }
+        public ICollection<Produtos>? Produtos { get; set; }
     }
 
-    public class ApplicationContext : DbContext
-    {
-        public DbSet<DadosProduto> Produtos  { get; set; }
-        public DbSet<Categoria> Categoria { get; set; }
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            _= optionsBuilder.UseSqlServer(@"Server=.\SQLEXPRESS;Database=ProdutosDb;Trusted_Connection=True;TrustServerCertificate=true;");
-        }
-
-    }
 }
