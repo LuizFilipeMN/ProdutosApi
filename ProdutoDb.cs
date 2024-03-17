@@ -2,11 +2,13 @@
 
 namespace apiMinima
 {
-    public class ProdutoDb : DbContext
+    public class ApplicationContext : DbContext
     {
-        public ProdutoDb(DbContextOptions<ProdutoDb> options) :
-            base(options) { }
+        public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
+        {
+        }
 
-        public DbSet<DadosProduto> DadosProduto => Set<DadosProduto>();
+        public DbSet<DadosProduto> Produtos { get; set; }
+        public DbSet<Categoria> Categoria { get; set; }
     }
 }

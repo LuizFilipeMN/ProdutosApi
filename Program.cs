@@ -2,35 +2,37 @@ using apiMinima;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddDbContext<ProdutoDb>(opt => opt.UseInMemoryDatabase("ListaProdutos"));
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+builder.Services.AddDbContext<ApplicationContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 var app = builder.Build();
 
-app.MapGet("/produtos", async (ProdutoDb db) => await db.DadosProduto.ToListAsync());
+app.MapGet("/produtos", async (ApplicationContext db) => await db.DadosProduto.ToListAsync());
 
-app.MapGet("/produtos/cadastro", async (ProdutoDb db) => await db.DadosProduto.Where(t => t.TemCadastro).ToListAsync());
+app.MapGet("/produtos/cadastro", async (ApplicationContext db) => await db.DadosProduto.Where(t => t.TemCadastro).ToListAsync());
 
-app.MapGet("/produtos/semcadastro", async (ProdutoDb db) => await db.DadosProduto.Where(t => !t.TemCadastro).ToListAsync());
+app.MapGet("/produtos/semcadastro", async (ApplicationContext db) => await db.DadosProduto.Where(t => !t.TemCadastro).ToListAsync());
 
-app.MapGet("/produtos/{id}", async (ProdutoDb db, int id) =>
+app.MapGet("/produtos/{id}", async (ApplicationContext db, int id) =>
 {
     var produto = await db.DadosProduto.FindAsync(id);
     return produto is not null ? Results.Ok(produto) : Results.NotFound();
 });
 
-app.MapGet("/produtos/categoria/{categoria}", async (ProdutoDb db, string categoria) =>
+app.MapGet("/produtos/categoria/{categoria}", async (ApplicationContext db, string categoria) =>
 {
     var produtos = await db.DadosProduto.Where(p => p.Categoria == categoria).ToListAsync();
     return produtos.Any() ? Results.Ok(produtos) : Results.NotFound();
 });
 
-app.MapGet("/produtos/codigo/{codigo}", async (ProdutoDb db, int codigo) =>
+app.MapGet("/produtos/codigo/{codigo}", async (ApplicationContext db, int codigo) =>
 {
     var produto = await db.DadosProduto.FirstOrDefaultAsync(p => p.Codigo == codigo);
     return produto is not null ? Results.Ok(produto) : Results.NotFound();
 });
 
-app.MapPost("/produtos/adicionar", async (DadosProduto produto, ProdutoDb db) =>
+app.MapPost("/produtos/adicionar", async (DadosProduto produto, ApplicationContext db) =>
 {
     db.DadosProduto.Add(produto);
     await db.SaveChangesAsync();
@@ -39,7 +41,7 @@ app.MapPost("/produtos/adicionar", async (DadosProduto produto, ProdutoDb db) =>
 
 });
 
-app.MapPut("/produtos/editar/{id}", async (ProdutoDb db, int id, DadosProduto inputProduto) =>
+app.MapPut("/produtos/editar/{id}", async (ApplicationContext db, int id, DadosProduto inputProduto) =>
 {
     var produto = await db.DadosProduto.FindAsync(id);
 
@@ -52,6 +54,7 @@ app.MapPut("/produtos/editar/{id}", async (ProdutoDb db, int id, DadosProduto in
     produto.Quantidade = inputProduto.Quantidade;
     produto.Descricao = inputProduto.Descricao;
     produto.Avaliacao = inputProduto.Avaliacao;
+    produto.CategoriaId = inputProduto.CategoriaId;
     produto.Categoria = inputProduto.Categoria;
     produto.TemCadastro = inputProduto.TemCadastro;
 
@@ -61,7 +64,7 @@ app.MapPut("/produtos/editar/{id}", async (ProdutoDb db, int id, DadosProduto in
 });
 
 
-app.MapDelete("/produtos/{id}", async (ProdutoDb db, int id) =>
+app.MapDelete("/produtos/{id}", async (ApplicationContext db, int id) =>
 {
     if (await db.DadosProduto.FindAsync(id) is DadosProduto produto)
     {
@@ -73,4 +76,3 @@ app.MapDelete("/produtos/{id}", async (ProdutoDb db, int id) =>
 });
 
 app.Run();
-
