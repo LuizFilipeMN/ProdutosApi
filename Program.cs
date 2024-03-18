@@ -9,7 +9,7 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
     options.JsonSerializerOptions.IgnoreReadOnlyProperties = true;
- 
+
 });
 
 builder.Services.AddDbContext<ProdutoDb>(options =>
@@ -65,28 +65,22 @@ app.MapPost("/produtos/adicionar", async (HttpContext context) =>
     var produto = await context.Request.ReadFromJsonAsync<Produtos>();
     await using var db = context.RequestServices.GetRequiredService<ProdutoDb>();
 
-    // Verificar se o CategoriaId é válido
     if (produto.CategoriaId > 0)
     {
-        // Consultar a categoria no banco de dados pelo ID
         var categoria = await db.Categoria.FindAsync(produto.CategoriaId);
         if (categoria != null)
         {
-            // Atribuir a categoria encontrada ao produto
             produto.Categoria = categoria;
         }
         else
         {
-            // Caso a categoria não seja encontrada, lançar uma exceção
             throw new InvalidOperationException("Categoria não encontrada.");
         }
     }
 
-    // Adicionar o produto ao contexto e salvar as alterações
     db.Produtos.Add(produto);
     await db.SaveChangesAsync();
 
-    // Retornar uma resposta com status 201 Created e o produto adicionado
     return Results.Created($"/produtos/{produto.Id}", produto);
 });
 
@@ -158,7 +152,6 @@ app.MapPut("/categorias/{id}", async (HttpContext context) =>
         return Results.NotFound();
 
     categoria.Nome = inputCategoria.Nome;
-    // Se houver outras propriedades a serem atualizadas, faça aqui
 
     await db.SaveChangesAsync();
 

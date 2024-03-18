@@ -12,7 +12,7 @@ namespace apiMinima
         public int Id { get; set; }
         public string? Nome { get; set; }
         public int Codigo { get; set; }
-        public float Preco { get; set; } // Alterado para float
+        public float Preco { get; set; }
         public float Quantidade { get; set; }
         public string? Descricao { get; set; }
         public int Avaliacao { get; set; }
@@ -28,7 +28,6 @@ namespace apiMinima
         public int Id { get; set; }
         public string? Nome { get; set; }
 
-        // Evita a serialização cíclica
         [JsonIgnore]
         public ICollection<Produtos>? Produtos { get; set; }
     }

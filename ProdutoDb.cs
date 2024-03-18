@@ -2,9 +2,9 @@
 using System.Text.Json.Serialization;
 using System.Text.Json;
 
-namespace apiMinima // Adicione esse namespace
+namespace apiMinima
 {
-    public class ProdutoDb : DbContext // Renomeie para ProdutoDbContext
+    public class ProdutoDb : DbContext
     {
         public ProdutoDb(DbContextOptions<ProdutoDb> options) : base(options)
         {
